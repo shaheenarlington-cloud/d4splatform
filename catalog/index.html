@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>D4S Product Catalog</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: navy-and-gold catalog in two languages. Sticky header with animated logo and language switch, hero with the four ways to buy, filterable product grid, detail drawer, plan table, buying steps, FAQ, request form. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --ink:#0E1B33; --muted:#55627A; --line:#D9DFEA;
+  --gold:#D9A441; --gold-ink:#0E1B33; --gold-text:#8A5E0A;
+  --band:#0E1B33; --band-ink:#EAF0FA; --band-muted:#9FB0CC;
+  --good:#1D7A4D; --good-bg:#E3F3EA;
+  --font-display:"Bricolage Grotesque","Hind Siliguri","Segoe UI",system-ui,sans-serif;
+  --font-body:"Source Sans 3","Hind Siliguri","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono","Hind Siliguri",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B1426; --surface:#121E36; --ink:#EAF0FA; --muted:#9AA8C2; --line:#24334F;
+  --gold:#E3B85C; --gold-ink:#0B1426; --gold-text:#E3B85C;
+  --band:#121E36; --band-ink:#EAF0FA; --band-muted:#9AA8C2;
+  --good:#5BD398; --good-bg:#12332A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1426; --surface:#121E36; --ink:#EAF0FA; --muted:#9AA8C2; --line:#24334F;
+  --gold:#E3B85C; --gold-ink:#0B1426; --gold-text:#E3B85C;
+  --band:#121E36; --band-ink:#EAF0FA; --band-muted:#9AA8C2;
+  --good:#5BD398; --good-bg:#12332A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+h1,h2,h3{font-family:var(--font-display);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto}
+.mono{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+section{padding-block:64px}
+
+/* Bangla needs looser lines and no letter-spacing, which breaks joined letters */
+html[lang="bn"] body{line-height:1.75}
+html[lang="bn"] h1,html[lang="bn"] h2,html[lang="bn"] h3{line-height:1.35;letter-spacing:0}
+html[lang="bn"] .mono,html[lang="bn"] .ways h2,html[lang="bn"] .drawer h3{letter-spacing:0;text-transform:none;font-size:14px}
+html[lang="bn"] .seg button{letter-spacing:0}
+
+/* animated logo */
+.lg{display:block;color:var(--band-ink);overflow:visible;flex:none}
+.lg .ring{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;stroke-dasharray:164;stroke-dashoffset:0;transform:rotate(-90deg);transform-origin:32px 32px;animation:lgdraw 1.6s cubic-bezier(.4,0,.2,1) both}
+.lg .orbit{transform-origin:32px 32px;animation:lgspin 9s linear infinite}
+.lg .dot{fill:var(--gold)}
+.lg text{font-family:var(--font-display);font-weight:700;font-size:19px;fill:currentColor;text-anchor:middle;animation:lgfade .8s .9s both}
+@keyframes lgdraw{from{stroke-dashoffset:164}to{stroke-dashoffset:0}}
+@keyframes lgspin{to{transform:rotate(360deg)}}
+@keyframes lgfade{from{opacity:0}to{opacity:1}}
+.logoimg{display:block;object-fit:contain}
+
+/* header */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--band)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--band);color:var(--band-ink);
+  margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.bar{display:flex;align-items:center;gap:16px;padding-block:10px;flex-wrap:wrap}
+.brand{font-family:var(--font-display);font-weight:700;font-size:19px;text-decoration:none;display:flex;align-items:center;gap:10px;line-height:1.1}
+.brand small{display:block;font-family:var(--font-body);font-weight:400;font-size:12px;color:var(--band-muted);margin-top:2px}
+nav{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap;font-size:15px}
+nav a{text-decoration:none;color:var(--band-muted)}
+nav a:hover{color:var(--band-ink)}
+.seg{display:inline-flex;border:1px solid rgba(255,255,255,.22);border-radius:8px;overflow:hidden}
+.seg button{background:none;border:0;padding:6px 12px;cursor:pointer;color:var(--band-muted);font-family:var(--font-mono);font-size:12.5px;min-height:34px}
+.seg button[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink)}
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+
+/* hero */
+.hero{background:var(--band);color:var(--band-ink);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));padding-block:48px 64px}
+.hero .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:center}
+.herologo{display:flex;align-items:center;gap:16px}
+.hero h1{font-size:clamp(32px,5vw,54px);font-weight:700}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p.lead{color:var(--band-muted);font-size:19px;margin-top:18px;max-width:52ch}
+.cta-row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;cursor:pointer;text-decoration:none;min-height:46px}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.btn.ghost{background:none;border-color:rgba(255,255,255,.3);color:var(--band-ink)}
+.btn:hover{filter:brightness(1.06)}
+.film{margin:0;position:relative;border-radius:12px;overflow:hidden;background:#0A1620;aspect-ratio:1168/576;max-width:100%;border:1px solid rgba(255,255,255,.14)}
+.film video{display:block;width:100%;height:100%;object-fit:cover}
+.snd{position:absolute;right:10px;bottom:10px;background:rgba(8,16,28,.72);color:#EAF0FA;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;min-height:36px}
+.snd:hover{background:rgba(8,16,28,.9)}
+.waysrow{max-width:1120px;margin:40px auto 0}
+.ways{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));min-width:0}
+.ways h2{grid-column:1/-1;font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--band-muted);padding:14px 20px 10px}
+.way{padding:14px 20px 18px;border-top:1px solid rgba(255,255,255,.12);border-left:1px solid rgba(255,255,255,.12);font-size:15px;min-width:0}
+.ways h2+.way{border-left:0}
+.way b{display:block;font-family:var(--font-display);color:var(--gold);margin-bottom:4px}
+.way span{color:var(--band-muted)}
+@media (max-width:860px){.ways{grid-template-columns:repeat(2,minmax(0,1fr))}.way:nth-child(even){border-left:0}}
+@media (max-width:520px){.ways{grid-template-columns:1fr}.way{border-left:0}}
+
+/* catalog */
+.head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.head h2{font-size:clamp(26px,3.4vw,38px)}
+.head p{color:var(--muted);max-width:52ch;margin-top:8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:15px;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr;gap:20px}
+.card.cta{background:var(--band);color:var(--band-ink);border-color:var(--band);justify-content:center}
+.card.cta .body{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px}
+.card.cta .foot{margin-top:0;padding-top:0}
+.ctatext{display:grid;gap:8px;max-width:60ch}
+.card.cta h3{color:var(--band-ink)}
+.card.cta p{color:var(--band-muted)}
+.card.cta .tag{color:var(--gold)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.thumb{position:relative;display:block;width:100%;aspect-ratio:1136/556;background:#070C16;overflow:hidden;container-type:inline-size}
+.thumb img{position:absolute;left:25%;top:12%;width:50%;height:auto;display:block;-webkit-mask-image:radial-gradient(ellipse at center,#000 52%,transparent 98%);mask-image:radial-gradient(ellipse at center,#000 52%,transparent 98%)}
+.tlabel{position:absolute;left:0;right:0;bottom:5%;padding-inline:12px;text-align:center;font-family:var(--font-display);font-weight:700;font-size:12.5px;font-size:clamp(12.5px,2.9cqw,16px);line-height:1.2;text-wrap:balance;color:#B9C2D2;background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 1px,rgba(0,0,0,.10) 1px 2px),linear-gradient(180deg,#F1F5FC 0%,#B4BDCE 45%,#6D788C 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 -1px 0 rgba(255,255,255,.22)) drop-shadow(0 2px 1.5px rgba(0,0,0,.95))}
+.thumb.dimg{border-radius:10px;margin-top:16px}
+.card .body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.tag{color:var(--gold-text)}
+.card h3{font-size:22px}
+.card p{color:var(--muted);font-size:16px}
+.card .foot{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+@media (min-width:700px){
+  .card{flex-direction:row}
+  .card .thumb{width:46%;flex:none;align-self:flex-start}
+  .card .body{flex:1;justify-content:center;padding:24px 28px}
+  .card h3{font-size:24px}
+  .card.cta{flex-direction:row}
+}
+.card:not(.cta){background:#080D18 url(assets/d4s-texture.webp) 0 0/auto 168px repeat;border-color:#1B2640;color:#fff}
+.card:not(.cta) .tag{color:#E3B85C;font-size:15.5px}
+.card:not(.cta) h3{color:#fff;font-size:27.5px}
+.card:not(.cta) p{color:#B9C4D9;font-size:20px}
+.card:not(.cta) .price{color:#fff;font-size:25px}
+.card:not(.cta) .price small{color:#9FB0CC;font-size:17.5px}
+.card:not(.cta) .btn{background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.35);font-size:19px}
+@media (min-width:700px){.card:not(.cta) h3{font-size:30px}}
+.price{font-family:var(--font-display);font-weight:700;font-size:20px}
+.price small{font-family:var(--font-body);font-weight:400;font-size:14px;color:var(--muted)}
+.empty{color:var(--muted);padding:24px;border:1px dashed var(--line);border-radius:12px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(5,10,22,.6);z-index:40;display:flex;justify-content:flex-end}
+.drawer{background:var(--bg);width:min(560px,100%);height:100%;overflow-y:auto;padding:24px max(20px,env(safe-area-inset-right,0px)) calc(32px + env(safe-area-inset-bottom,0px)) 24px;padding-top:calc(24px + env(safe-area-inset-top,0px))}
+.drawer h2{font-size:30px;margin-top:6px}
+.drawer h3{font-size:14px;font-family:var(--font-mono);font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:26px;margin-bottom:8px}
+.drawer ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.x{float:right;background:var(--surface);border:1px solid var(--line);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:20px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:8px}
+.dvid{display:block;width:100%;border-radius:8px;margin-top:12px;background:#000;aspect-ratio:16/9}
+.good{background:var(--good-bg);color:var(--good);border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
+
+/* plans */
+.plans{display:grid;grid-template-columns:1fr;gap:20px;align-items:stretch}
+.plan{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.plan.pop{border:2px solid var(--gold)}
+.plan h3{font-size:22px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.plan .big{font-family:var(--font-display);font-size:38px;font-weight:700;line-height:1.1}
+.plan .big small{font-family:var(--font-body);font-size:15px;font-weight:400;color:var(--muted)}
+.plan ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:16px}
+.plan li::before{content:"\2713";color:var(--good);font-weight:700;margin-right:8px}
+.plan .btn{margin-top:auto}
+.badge{background:var(--gold);color:var(--gold-ink);font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;font-family:var(--font-body)}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.seg.light{border-color:var(--line)}
+.seg.light button{color:var(--muted)}
+.seg.light button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button[data-lang]{font-family:var(--font-body);font-size:14px}
+@media (min-width:700px){.plans{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:700px) and (max-width:999px){.plan{padding:20px}.plan .big{font-size:32px}}
+
+/* steps and faq */
+.steps{display:grid;grid-template-columns:1fr;gap:1px;border:1px solid var(--line);border-radius:12px;background:var(--line);overflow:hidden}
+.step{padding:22px;min-width:0;background:var(--surface)}
+@media (min-width:600px){.steps{grid-template-columns:repeat(6,minmax(0,1fr))}.step:nth-child(-n+3){grid-column:span 2}.step:nth-child(n+4){grid-column:span 3}}
+@media (min-width:1000px){.steps{grid-template-columns:repeat(5,minmax(0,1fr))}.step:nth-child(n){grid-column:auto}}
+.step .n{color:var(--gold-text)}
+.step h3{font-size:19px;margin:8px 0 6px}
+.step p{font-size:15.5px;color:var(--muted)}
+.meet{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:40px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:28px}
+.meet img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;border-radius:10px;background:var(--line)}
+.meet h2{font-size:clamp(26px,3.4vw,36px)}
+.meet .who{color:var(--gold-text);margin-top:10px}
+.meet p.txt{color:var(--muted);margin-top:14px;max-width:56ch}
+.recv{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px}
+.recv h3{font-size:22px}
+.recv .sub{color:var(--muted);margin-top:6px;max-width:60ch}
+.recvgrid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+@media (min-width:700px){.recvgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rbox{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.rbox b{display:block;font-family:var(--font-display);margin-bottom:4px}
+.rbox span{color:var(--muted);font-size:15.5px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+details{border-bottom:1px solid var(--line);padding-block:14px}
+summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";color:var(--gold-text);font-size:22px;line-height:1}
+details[open] summary::after{content:"\2212"}
+details p{color:var(--muted);margin-top:8px}
+.trust{display:grid;gap:14px;align-content:start}
+.trust div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.trust b{font-family:var(--font-display);display:block;margin-bottom:2px}
+.trust span{color:var(--muted);font-size:15.5px}
+
+/* form */
+.formwrap{background:var(--band);color:var(--band-ink);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.formwrap p.sub{color:var(--band-muted);margin-top:10px;max-width:46ch}
+form{display:grid;gap:14px;min-width:0}
+label{display:grid;gap:6px;font-size:15px;font-weight:600}
+input,select,textarea{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:11px 12px;width:100%;color:var(--band-ink)}
+select option{color:#0E1B33}
+textarea{min-height:110px;resize:vertical}
+.out{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:16px;display:grid;gap:12px;margin-top:6px}
+.out pre{white-space:pre-wrap;margin:0;font-family:var(--font-mono);font-size:13.5px;color:var(--band-ink)}
+footer{padding-block:28px;color:var(--muted);font-size:14.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:860px){
+  .hero .wrap,.cols,.formgrid{grid-template-columns:1fr;gap:32px}
+  nav{margin-left:0;width:100%;order:3}
+  section{padding-block:48px}
+}
+@media (max-width:640px){
+  .meet{grid-template-columns:1fr;gap:24px;padding:20px}
+  .meet img{max-width:320px}
+}
+@media (max-width:700px){
+  .bar{gap:10px 14px}
+  nav{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:6px;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  .brand small{display:none}
+  .tools{margin-left:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="D4S Platform"><span id="logoHead"></span><span>D4S Platform<small data-i18n="brandSub">Design For Solution</small></span></a>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Language">
+        <button type="button" data-lang="bn" aria-pressed="false">বাংলা</button>
+        <button type="button" data-lang="en" aria-pressed="true">English</button>
+      </div>
+    </div>
+    <nav aria-label="Sections">
+      <a href="../" data-i18n="nSite">D4S Website</a><a href="#products" data-i18n="nProducts">Products</a><a href="#pricing" data-i18n="nPlans">Plans</a><a href="#how" data-i18n="nHow">How buying works</a><a href="#faq" data-i18n="nFaq">Questions</a><a href="#request" data-i18n="nTalk">Talk to us</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <div class="herologo"><span id="logoHero"></span><p class="mono" style="color:var(--gold)" data-i18n="eyebrow">Design For Solution · Dhaka</p></div>
+      <h1 style="margin-top:18px" data-i18n-html="h1">Software built in Dhaka, ready to <em>run your business</em></h1>
+      <p class="lead" data-i18n="lead">Websites, apps and subscription tools we built for real estate, tax and education work. Try a demo, pick a plan, or ask us to change one to fit your company.</p>
+      <div class="cta-row">
+        <a class="btn gold" href="#products" data-i18n="seeProducts">See the products</a>
+        <a class="btn ghost" href="#request" data-i18n="bookDemo">Book a demo</a>
+      </div>
+    </div>
+    <figure class="film">
+      <video id="film" src="assets/d4s-intro.mp4" poster="assets/d4s-poster.jpg" muted autoplay loop playsinline preload="metadata" aria-label="D4S animated logo"></video>
+      <button type="button" class="snd" id="snd">Sound on</button>
+    </figure>
+  </div>
+  <div class="waysrow"><div class="ways" id="ways"></div></div>
+</div>
+
+<section id="products">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <h2 data-i18n="prodTitle">Products</h2>
+        <p data-i18n="prodSub">Select a product to see what it does, who it suits and what it costs.</p>
+      </div>
+      <div class="toolbar">
+        <div class="chips" role="group" aria-label="Filter" id="chips"></div>
+        <div class="seg light" role="group" aria-label="Currency">
+          <button type="button" data-cur="bdt" aria-pressed="true">BDT</button>
+          <button type="button" data-cur="usd" aria-pressed="false">USD</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="pricing" style="background:var(--surface);border-block:1px solid var(--line);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <h2 data-i18n="planTitle">LandFlow AI plans</h2>
+        <p data-i18n="planSub">Our land bank and acquisition CRM for Bangladeshi developers. Start on Starter, move up when your team grows.</p>
+      </div>
+      <div class="toolbar">
+        <div class="seg light" role="group" aria-label="Billing">
+          <button type="button" data-bill="m" aria-pressed="true" data-i18n="monthly">Monthly</button>
+          <button type="button" data-bill="y" aria-pressed="false" data-i18n="yearly">Yearly</button>
+        </div>
+        <div class="seg light" role="group" aria-label="Currency">
+          <button type="button" data-cur="bdt" aria-pressed="true">BDT</button>
+          <button type="button" data-cur="usd" aria-pressed="false">USD</button>
+        </div>
+        <span class="good" data-i18n="saveTag">Yearly: pay for 10 months, use 12</span>
+      </div>
+    </div>
+    <div class="plans" id="plans"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i18n="howTitle">How buying works</h2><p data-i18n="howSub">The same path for every product, so you always know what happens next.</p></div></div>
+    <div class="steps" id="steps"></div>
+    <div class="recv" id="recv"></div>
+  </div>
+</section>
+
+<section id="meet" style="padding-top:0">
+  <div class="wrap meet">
+    <img src="assets/founder.jpg" width="800" height="1067" loading="lazy" id="meetImg" alt="Shaheen, founder of D4S Platform">
+    <div>
+      <p class="mono tag" data-i18n="meetTag">Meet D4S</p>
+      <h2 style="margin-top:8px" data-i18n="meetTitle">Built by someone who works in land development</h2>
+      <p class="who" data-i18n="meetWho">Shaheen · Founder, D4S Platform · GM Design and Development, Roza Real Estate</p>
+      <p class="txt" data-i18n="meetText">I run design and development at a land development and sales company in Mirpur DOHS, Dhaka. The tools in this catalog come from the problems I see in that work, and I started D4S Platform to build them for other businesses. Message me and I will show you a demo myself.</p>
+      <div class="cta-row"><a class="btn gold" href="#request" data-i18n="bookDemo">Book a demo</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:0">
+  <div class="wrap cols">
+    <div>
+      <div class="head" style="margin-bottom:12px"><div><h2 data-i18n="faqTitle">Questions we hear</h2></div></div>
+      <div id="faqList"></div>
+    </div>
+    <div class="trust" id="trust"></div>
+  </div>
+</section>
+
+<div class="formwrap">
+<section id="request" style="padding-block:64px">
+  <div class="wrap formgrid">
+    <div>
+      <h2 style="font-size:clamp(28px,3.6vw,40px)" data-i18n="reqTitle">Book a demo or ask for a change</h2>
+      <p class="sub" data-i18n="reqSub">Tell us which product you are looking at and what your business needs. We reply within one working day.</p>
+    </div>
+    <div>
+      <form id="reqForm" novalidate>
+        <label for="fName"><span data-i18n="lName">Your name</span><input id="fName" required autocomplete="name"></label>
+        <label for="fPhone"><span data-i18n="lPhone">Phone or WhatsApp</span><input id="fPhone" inputmode="tel" required autocomplete="tel"></label>
+        <label for="fProduct"><span data-i18n="lProduct">Product</span><select id="fProduct"></select></label>
+        <label for="fWant"><span data-i18n="lWant">What do you need?</span><select id="fWant"></select></label>
+        <label for="fMsg"><span data-i18n="lMsg">Message</span><textarea id="fMsg" data-i18n-ph="phMsg" placeholder="Company, team size, anything we should know"></textarea></label>
+        <button class="btn gold" type="submit" data-i18n="prepare">Prepare my request</button>
+        <p id="fErr" style="color:#FFB4A8;font-size:15px" hidden data-i18n="errMsg">Please add your name and phone number.</p>
+      </form>
+      <div class="out" id="out" hidden>
+        <p data-i18n="outIntro">Your request is ready. Send it to us on WhatsApp, or copy it and email it to us.</p>
+        <pre id="outText"></pre>
+        <div class="cta-row" style="margin:0">
+          <a class="btn gold" id="waLink" target="_blank" rel="noopener" href="#" data-i18n="openWa">Open WhatsApp</a>
+          <button class="btn ghost" type="button" id="copyBtn" data-i18n="copyText">Copy text</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<footer class="wrap"><span data-i18n="footL">D4S Platform · Design For Solution · Dhaka, Bangladesh</span><a href="../" data-i18n="siteFoot">Visit the main D4S website</a><span data-i18n="footR">Prices in BDT shown with approximate USD</span></footer>
+</main>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" id="drawer" tabindex="-1"></div>
+</div>
+
+<script>
+/* ===== EDIT THESE BEFORE YOU PUBLISH ===== */
+var CONFIG = {
+  whatsapp: "8801612339763",   /* taken from your D4S website; digits only with country code */
+  logoSrc: ""     /* your real D4S logo: a data: URI or a published image path. Leave empty to use the built-in animated mark. */
+};
+
+/* Demos: add a video file or link and a live demo link for each product when they are ready.
+   video: a published file such as "assets/demo-landflow.mp4" (on your own site, any video URL works)
+   url:   a page where visitors can try the product with sample data (opens in a new tab)
+   Leave both empty and the product shows only the "Book a live demo" button. */
+var DEMOS = {
+  landflow:{video:"",url:""},
+  tax:{video:"",url:""},
+  roza:{video:"",url:""},
+  neural:{video:"",url:""},
+  physiq:{video:"",url:""},
+  card:{video:"",url:""},
+  bot:{video:"",url:""}
+};
+
+var T = {
+ en:{ctaTag:"Not listed?",ctaTitle:"Need something else?",ctaText:"Tell us what your business needs. We will reply with a fixed quote.",ctaBtn:"Ask for a quote",recvTitle:"What arrives after you pay",recvSub:"We send it by email and WhatsApp, together with a short video guide for your first steps.",demoTitle:"See it in action",demoNote:"Pick what suits you: watch a short video, try it yourself with sample data, or have us walk you through it on a call.",demoNoteNone:"We show you the product on a short call, using sample data or your own. Choose a time that suits you.",demoLive:"Try the live demo",demoBook:"Book a live demo",nSite:"D4S Website",siteFoot:"Visit the main D4S website",meetTag:"Meet D4S",meetTitle:"Built by someone who works in land development",meetWho:"Shaheen · Founder, D4S Platform · GM Design and Development, Roza Real Estate",
+  meetText:"I run design and development at a land development and sales company in Mirpur DOHS, Dhaka. The tools in this catalog come from the problems I see in that work, and I started D4S Platform to build them for other businesses. Message me and I will show you a demo myself.",
+  soundOn:"Sound on",soundOff:"Sound off",brandSub:"Design For Solution",nProducts:"Products",nPlans:"Plans",nHow:"How buying works",nFaq:"Questions",nTalk:"Talk to us",
+  eyebrow:"Design For Solution · Dhaka",h1:"Software built in Dhaka, ready to <em>run your business</em>",
+  lead:"Websites, apps and subscription tools we built for real estate, tax and education work. Try a demo, pick a plan, or ask us to change one to fit your company.",
+  seeProducts:"See the products",bookDemo:"Book a demo",waysTitle:"Four ways to buy",
+  prodTitle:"Products",prodSub:"Select a product to see what it does, who it suits and what it costs.",
+  all:"All",tSaas:"Subscriptions",tApp:"Apps",tWebsite:"Websites",tService:"Custom work",
+  view:"View details",from:"from ",empty:"Nothing in this group yet.",
+  planTitle:"LandFlow AI plans",planSub:"Our land bank and acquisition CRM for Bangladeshi developers. Start on Starter, move up when your team grows.",
+  monthly:"Monthly",yearly:"Yearly",saveTag:"Yearly: pay for 10 months, use 12",perMonth:"/ month",perYear:"/ year",popular:"Most chosen",trial:"Start free trial",
+  howTitle:"How buying works",howSub:"The same path for every product, so you always know what happens next.",step:"Step ",
+  faqTitle:"Questions we hear",
+  reqTitle:"Book a demo or ask for a change",reqSub:"Tell us which product you are looking at and what your business needs. We reply within one working day.",
+  lName:"Your name",lPhone:"Phone or WhatsApp",lProduct:"Product",lWant:"What do you need?",lMsg:"Message",phMsg:"Company, team size, anything we should know",
+  prepare:"Prepare my request",errMsg:"Please add your name and phone number.",
+  outIntro:"Your request is ready. Send it to us on WhatsApp, or copy it and email it to us.",openWa:"Open WhatsApp",copyText:"Copy text",copied:"Copied",selected:"Text selected, press copy",
+  footL:"D4S Platform · Design For Solution · Dhaka, Bangladesh",footR:"Prices in BDT shown with approximate USD",
+  dProblem:"The problem",dGet:"What you get",dFor:"Who it is for",dPrice:"Price",dCustom:"Ask for a custom version",close:"Close",
+  unit:{mo:"/ month",once:"one time",proj:"per project"},
+  want:{demo:"Book a demo",trial:"Start a free trial",buy:"Buy now",custom:"Custom version quote"},
+  planLabel:"Plan",planM:"monthly",planY:"yearly",
+  msg:{hello:"Hello D4S Platform,",i:"I am ",prod:"Product: ",req:"Request: ",note:"Note: "}},
+ bn:{ctaTag:"তালিকায় নেই?",ctaTitle:"অন্য কিছু দরকার?",ctaText:"আপনার ব্যবসার কী দরকার জানান। আমরা নির্দিষ্ট দামের কোটেশন পাঠাব।",ctaBtn:"কোটেশন চান",recvTitle:"টাকা দেওয়ার পর যা পাবেন",recvSub:"ইমেইল ও হোয়াটসঅ্যাপে পাঠাই, সঙ্গে প্রথম ধাপগুলো দেখানো একটি ছোট ভিডিও গাইড।",demoTitle:"চালু অবস্থায় দেখুন",demoNote:"আপনার সুবিধামতো বেছে নিন: ছোট ভিডিও দেখুন, নমুনা তথ্য দিয়ে নিজে চালিয়ে দেখুন, অথবা কলে আমাদের সঙ্গে ঘুরে দেখুন।",demoNoteNone:"ছোট একটি কলে আমরা নমুনা তথ্য বা আপনার নিজের তথ্য দিয়ে প্রোডাক্টটি দেখিয়ে দিই। আপনার সুবিধার সময় বেছে নিন।",demoLive:"লাইভ ডেমো চালান",demoBook:"লাইভ ডেমো বুক করুন",nSite:"D4S ওয়েবসাইট",siteFoot:"D4S-এর মূল ওয়েবসাইট দেখুন",meetTag:"D4S-এর সঙ্গে পরিচিত হন",meetTitle:"যিনি নিজে জমি উন্নয়নের কাজ করেন, তাঁর হাতে তৈরি",meetWho:"শাহীন · প্রতিষ্ঠাতা, D4S Platform · জিএম ডিজাইন অ্যান্ড ডেভেলপমেন্ট, রোজা রিয়েল এস্টেট",
+  meetText:"আমি ঢাকার মিরপুর ডিওএইচএস-এ একটি জমি উন্নয়ন ও বিক্রয় কোম্পানির ডিজাইন ও ডেভেলপমেন্ট দেখি। এই ক্যাটালগের টুলগুলো সেই কাজে দেখা সমস্যা থেকেই জন্মেছে, আর অন্য ব্যবসার জন্য সেগুলো বানাতেই D4S Platform শুরু করেছি। আমাকে মেসেজ করুন, ডেমো আমি নিজে দেখিয়ে দেব।",
+  soundOn:"শব্দ চালু",soundOff:"শব্দ বন্ধ",brandSub:"ডিজাইন ফর সলিউশন",nProducts:"প্রোডাক্ট",nPlans:"প্ল্যান",nHow:"কেনার ধাপ",nFaq:"প্রশ্নোত্তর",nTalk:"যোগাযোগ",
+  eyebrow:"ডিজাইন ফর সলিউশন · ঢাকা",h1:"ঢাকায় তৈরি সফটওয়্যার, যা আপনার <em>ব্যবসা চালাতে প্রস্তুত</em>",
+  lead:"রিয়েল এস্টেট, ট্যাক্স ও শিক্ষার কাজের জন্য আমাদের বানানো ওয়েবসাইট, অ্যাপ ও সাবস্ক্রিপশন টুল। ডেমো দেখুন, প্ল্যান বেছে নিন, অথবা আপনার কোম্পানির মতো করে বদলে দিতে বলুন।",
+  seeProducts:"প্রোডাক্ট দেখুন",bookDemo:"ডেমো বুক করুন",waysTitle:"কেনার চারটি উপায়",
+  prodTitle:"প্রোডাক্ট",prodSub:"কোনো প্রোডাক্টে ক্লিক করে দেখুন সেটি কী করে, কার জন্য এবং দাম কত।",
+  all:"সব",tSaas:"সাবস্ক্রিপশন",tApp:"অ্যাপ",tWebsite:"ওয়েবসাইট",tService:"কাস্টম কাজ",
+  view:"বিস্তারিত দেখুন",from:"শুরু ",empty:"এই বিভাগে এখনো কিছু নেই।",
+  planTitle:"LandFlow AI-এর প্ল্যান",planSub:"বাংলাদেশি ডেভেলপারদের জন্য আমাদের ল্যান্ড ব্যাংক ও অ্যাকুইজিশন CRM। স্টার্টার দিয়ে শুরু করুন, দল বড় হলে ওপরের প্ল্যানে যান।",
+  monthly:"মাসিক",yearly:"বার্ষিক",saveTag:"বার্ষিক: ১০ মাসের টাকায় ১২ মাস",perMonth:"/ মাস",perYear:"/ বছর",popular:"সবচেয়ে বেশি বাছাই",trial:"ফ্রি ট্রায়াল শুরু করুন",
+  howTitle:"কেনার ধাপ",howSub:"প্রতিটি প্রোডাক্টের ধাপ একই, তাই পরে কী হবে আপনি সবসময় জানবেন।",step:"ধাপ ",
+  faqTitle:"যেসব প্রশ্ন আমরা শুনি",
+  reqTitle:"ডেমো বুক করুন বা পরিবর্তনের অনুরোধ জানান",reqSub:"কোন প্রোডাক্ট দেখছেন এবং আপনার ব্যবসার কী দরকার, জানান। আমরা এক কর্মদিবসের মধ্যে উত্তর দিই।",
+  lName:"আপনার নাম",lPhone:"ফোন বা হোয়াটসঅ্যাপ",lProduct:"প্রোডাক্ট",lWant:"আপনার কী প্রয়োজন?",lMsg:"বার্তা",phMsg:"কোম্পানির নাম, দলের সদস্য সংখ্যা, আমাদের যা জানা দরকার",
+  prepare:"আমার অনুরোধ তৈরি করুন",errMsg:"অনুগ্রহ করে নাম ও ফোন নম্বর দিন।",
+  outIntro:"আপনার অনুরোধ তৈরি। হোয়াটসঅ্যাপে আমাদের পাঠান, অথবা কপি করে ইমেইলে পাঠান।",openWa:"হোয়াটসঅ্যাপ খুলুন",copyText:"লেখা কপি করুন",copied:"কপি হয়েছে",selected:"লেখা সিলেক্ট হয়েছে, কপি করুন",
+  footL:"D4S Platform · ডিজাইন ফর সলিউশন · ঢাকা, বাংলাদেশ",footR:"দাম টাকায় দেখানো, সঙ্গে আনুমানিক ডলার",
+  dProblem:"সমস্যাটি কী",dGet:"যা পাবেন",dFor:"কার জন্য",dPrice:"দাম",dCustom:"কাস্টম সংস্করণ চাই",close:"বন্ধ করুন",
+  unit:{mo:"/ মাস",once:"একবার",proj:"প্রতি প্রজেক্ট"},
+  want:{demo:"ডেমো বুক করুন",trial:"ফ্রি ট্রায়াল শুরু করুন",buy:"এখনই কিনুন",custom:"কাস্টম সংস্করণের কোটেশন"},
+  planLabel:"প্ল্যান",planM:"মাসিক",planY:"বার্ষিক",
+  msg:{hello:"আসসালামু আলাইকুম D4S Platform,",i:"আমি ",prod:"প্রোডাক্ট: ",req:"অনুরোধ: ",note:"নোট: "}}
+};
+
+var WAYS=[
+ {t:{en:"Subscription",bn:"সাবস্ক্রিপশন"},d:{en:"We host it. You log in and pay monthly or yearly.",bn:"আমরা হোস্ট করি। আপনি লগইন করে মাসিক বা বার্ষিক টাকা দেন।"}},
+ {t:{en:"License",bn:"লাইসেন্স"},d:{en:"You own a copy. One payment, optional yearly support.",bn:"একটি কপি আপনার নিজের। একবার টাকা দিন, চাইলে বার্ষিক সাপোর্ট নিন।"}},
+ {t:{en:"Template",bn:"টেমপ্লেট"},d:{en:"A finished website you edit yourself. One payment.",bn:"তৈরি ওয়েবসাইট, আপনি নিজে এডিট করবেন। একবার টাকা দিন।"}},
+ {t:{en:"Custom",bn:"কাস্টম"},d:{en:"We change a product to match how you work. Quoted per project.",bn:"আপনার কাজের ধরন অনুযায়ী আমরা প্রোডাক্ট বদলে দিই। প্রজেক্ট অনুযায়ী কোটেশন।"}}
+];
+var STEPS=[
+ {t:{en:"Look or try",bn:"দেখুন বা চালিয়ে দেখুন"},d:{en:"Open the product page, watch the demo or use the trial with sample data.",bn:"প্রোডাক্ট পেজ খুলুন, ডেমো দেখুন বা নমুনা তথ্য দিয়ে ট্রায়াল চালান।"}},
+ {t:{en:"Choose",bn:"বেছে নিন"},d:{en:"Pick a plan or license. For larger needs we agree the scope on a call.",bn:"প্ল্যান বা লাইসেন্স বেছে নিন। বড় প্রয়োজনে কলে কাজের পরিধি ঠিক করি।"}},
+ {t:{en:"Pay",bn:"টাকা দিন"},d:{en:"bKash, Nagad or bank transfer for local clients. We confirm international options with you.",bn:"দেশের গ্রাহকের জন্য বিকাশ, নগদ বা ব্যাংক ট্রান্সফার। বিদেশি গ্রাহকের জন্য কীভাবে টাকা নেব, আমরা আপনার সঙ্গে নিশ্চিত করি।"}},
+ {t:{en:"Get your product",bn:"প্রোডাক্ট হাতে পান"},d:{en:"We send your login or download link by email and WhatsApp, with a short video guide. Details are below.",bn:"আপনার লগইন বা ডাউনলোড লিংক ইমেইল ও হোয়াটসঅ্যাপে পাঠাই, সঙ্গে ছোট ভিডিও গাইড। বিস্তারিত নিচে দেখুন।"}},
+ {t:{en:"Get support",bn:"সাপোর্ট পান"},d:{en:"We check in during your first three months and reply to questions within 24 hours.",bn:"প্রথম তিন মাস আমরা খোঁজ নিই এবং প্রশ্নের উত্তর ২৪ ঘণ্টার মধ্যে দিই।"}}
+];
+var RECV=[
+ {t:{en:"Subscription",bn:"সাবস্ক্রিপশন"},d:{en:"A login link, your username and a first password. Sign in and start. Nothing to install.",bn:"লগইন লিংক, আপনার ইউজারনেম ও প্রথম পাসওয়ার্ড। লগইন করে সরাসরি শুরু করুন। কিছু ইনস্টল করতে হয় না।"}},
+ {t:{en:"Template or app",bn:"টেমপ্লেট বা অ্যাপ"},d:{en:"A download link with the files and your license note. Follow the guide to open it or put it online.",bn:"ফাইলসহ ডাউনলোড লিংক এবং আপনার লাইসেন্স নোট। গাইড দেখে খুলুন বা অনলাইনে তুলুন।"}},
+ {t:{en:"Custom work",bn:"কাস্টম কাজ"},d:{en:"The finished files, a handover call where we show you how to use them, and 30 days of fixes.",bn:"তৈরি ফাইল, ব্যবহার বুঝিয়ে দেওয়ার হস্তান্তর কল এবং ৩০ দিন ত্রুটি সংশোধন।"}}
+];
+var FAQ=[
+ {q:{en:"Can I try before I pay?",bn:"কেনার আগে কি চালিয়ে দেখা যায়?"},a:{en:"Subscription products come with a trial or a live demo using sample data. Templates have a preview link. Ask for the demo on any product page.",bn:"সাবস্ক্রিপশন প্রোডাক্টে নমুনা তথ্যসহ ট্রায়াল বা লাইভ ডেমো আছে। টেমপ্লেটের জন্য প্রিভিউ লিংক আছে। যে কোনো প্রোডাক্ট পেজ থেকে ডেমো চাইতে পারেন।"}},
+ {q:{en:"Who owns my data?",bn:"আমার তথ্যের মালিক কে?"},a:{en:"You do. On subscription plans we store it for you and give you an export on request. On licensed copies the data stays on your own server.",bn:"আপনি। সাবস্ক্রিপশন প্ল্যানে আমরা তথ্য সংরক্ষণ করি এবং অনুরোধ করলে এক্সপোর্ট দিই। লাইসেন্স কপিতে তথ্য আপনার নিজের সার্ভারেই থাকে।"}},
+ {q:{en:"Can you change a product for my company?",bn:"আমার কোম্পানির জন্য কি বদলে দিতে পারবেন?"},a:{en:"Yes. Choose the custom version, tell us how you work, and we send a fixed quote. Custom projects are paid 50% to start and 50% on delivery.",bn:"হ্যাঁ। কাস্টম সংস্করণ বেছে নিন, আপনার কাজের ধরন জানান, আমরা নির্দিষ্ট দামের কোটেশন পাঠাব। কাস্টম প্রজেক্টে শুরুতে ৫০% ও ডেলিভারিতে ৫০% দিতে হয়।"}},
+ {q:{en:"What does a license let me do?",bn:"লাইসেন্সে আমি কী করতে পারব?"},a:{en:"One license covers one business. You can use and edit the product for that business. Reselling it or giving it to other companies needs a separate agreement.",bn:"একটি লাইসেন্স একটি ব্যবসার জন্য। সেই ব্যবসার জন্য আপনি প্রোডাক্ট ব্যবহার ও এডিট করতে পারবেন। অন্যের কাছে বিক্রি বা অন্য কোম্পানিকে দেওয়ার জন্য আলাদা চুক্তি লাগে।"}},
+ {q:{en:"Do you support Bangla?",bn:"বাংলা ভাষা কি আছে?"},a:{en:"This page is in Bangla and English. Product screens are in English today. Tell us if you need Bangla labels and we will include it in your quote.",bn:"এই পেজ বাংলা ও ইংরেজি দুই ভাষায় আছে। প্রোডাক্টের স্ক্রিন আজ ইংরেজিতে। বাংলা লেবেল দরকার হলে জানান, আমরা আপনার কোটেশনে ধরে দেব।"}},
+ {q:{en:"What if I want a refund?",bn:"টাকা ফেরত চাইলে কী হবে?"},a:{en:"Subscriptions can be cancelled any time and stop at the end of the paid period. For licenses and templates, the refund terms are written on your invoice before you pay.",bn:"সাবস্ক্রিপশন যে কোনো সময় বাতিল করা যায় এবং পরিশোধিত সময়ের শেষে বন্ধ হয়। লাইসেন্স ও টেমপ্লেটের ফেরতের শর্ত টাকা দেওয়ার আগে ইনভয়েসে লেখা থাকে।"}}
+];
+var TRUST=[
+ {t:{en:"Built for local work",bn:"স্থানীয় কাজের জন্য তৈরি"},d:{en:"LandFlow AI uses the land record terms your team already uses: Mouza, JL number, Khatian, Dag and Namjari.",bn:"LandFlow AI আপনার দল যে শব্দ ব্যবহার করে সেগুলোই রাখে: মৌজা, জেএল নম্বর, খতিয়ান, দাগ ও নামজারি।"}},
+ {t:{en:"Real office, real people",bn:"আসল অফিস, আসল মানুষ"},d:{en:"D4S Platform is based in Dhaka. You can call, message on WhatsApp or visit.",bn:"D4S Platform ঢাকায়। আপনি কল করতে পারেন, হোয়াটসঅ্যাপে মেসেজ দিতে পারেন বা দেখা করতে পারেন।"}},
+ {t:{en:"Written terms",bn:"লিখিত শর্ত"},d:{en:"Every purchase comes with a license or service note, a support promise and a privacy policy.",bn:"প্রতিটি কেনার সঙ্গে লাইসেন্স বা সেবার নোট, সাপোর্টের প্রতিশ্রুতি ও প্রাইভেসি পলিসি থাকে।"}}
+];
+
+/* Prices below are starting examples. Replace bdt and usd with your own. */
+var PRODUCTS = [
+ {id:"landflow",type:"saas",name:{en:"LandFlow AI",bn:"LandFlow AI"},tag:{en:"Subscription",bn:"সাবস্ক্রিপশন"},
+  benefit:{en:"Keep every land purchase, owner, document and payment in one place.",bn:"প্রতিটি জমি কেনার তথ্য, মালিক, দলিল ও পেমেন্ট এক জায়গায় রাখুন।"},
+  problem:{en:"Land records sit in Excel sheets, paper files and WhatsApp chats. Deals stall because nobody can find the Khatian or see who still has to pay.",bn:"জমির তথ্য এক্সেল শিট, কাগজের ফাইল আর হোয়াটসঅ্যাপ চ্যাটে ছড়িয়ে থাকে। খতিয়ান খুঁজে পাওয়া যায় না, কার কত টাকা বাকি তাও বোঝা যায় না, ফলে ডিল আটকে যায়।"},
+  features:{en:["Land bank with Mouza, JL number, Dag and Khatian fields","Acquisition pipeline from first visit to Namjari","Owner and payment tracking per plot","Document storage per land record","Separate workspace for every company"],
+            bn:["মৌজা, জেএল নম্বর, দাগ ও খতিয়ানের ঘরসহ ল্যান্ড ব্যাংক","প্রথম পরিদর্শন থেকে নামজারি পর্যন্ত অ্যাকুইজিশন পাইপলাইন","প্রতিটি জমির মালিক ও পেমেন্ট ট্র্যাকিং","প্রতিটি জমির রেকর্ডের সঙ্গে ডকুমেন্ট সংরক্ষণ","প্রতিটি কোম্পানির জন্য আলাদা ওয়ার্কস্পেস"]},
+  forWho:{en:"Real estate developers and land buying teams in Bangladesh.",bn:"বাংলাদেশের রিয়েল এস্টেট ডেভেলপার ও জমি কেনার দল।"},
+  price:{bdt:3000,usd:25},unit:"mo",from:true,
+  includes:{en:["Hosted by us, nothing to install","Welcome video and onboarding call","Support reply within 24 hours"],bn:["আমরা হোস্ট করি, আপনাকে কিছু ইনস্টল করতে হবে না","ওয়েলকাম ভিডিও ও অনবোর্ডিং কল","২৪ ঘণ্টার মধ্যে সাপোর্টের উত্তর"]},
+  cta:{en:"Start free trial",bn:"ফ্রি ট্রায়াল শুরু করুন"},want:"trial"},
+ {id:"tax",type:"saas",name:{en:"D4S Tax Intelligence",bn:"D4S Tax Intelligence"},tag:{en:"Subscription",bn:"সাবস্ক্রিপশন"},
+  benefit:{en:"See VAT and tax risks before the NBR does.",bn:"NBR-এর নজরে পড়ার আগেই ভ্যাট ও কর-ঝুঁকি দেখে নিন।"},
+  problem:{en:"Consultancies review client files by hand. Errors surface only after a notice arrives, and the cost lands on you.",bn:"কনসালটেন্সিগুলো ক্লায়েন্টের ফাইল হাতে পরীক্ষা করে। ভুল ধরা পড়ে নোটিশ আসার পর, আর ক্ষতি আপনাকেই বইতে হয়।"},
+  features:{en:["Risk score for each client file before submission","Dashboard of flagged items by client","Automatic checks through a connected workflow","Client onboarding form","Clear monthly summary for your team"],
+            bn:["জমা দেওয়ার আগে প্রতিটি ক্লায়েন্ট ফাইলের ঝুঁকির স্কোর","ক্লায়েন্ট অনুযায়ী চিহ্নিত বিষয়ের ড্যাশবোর্ড","সংযুক্ত ওয়ার্কফ্লোর মাধ্যমে স্বয়ংক্রিয় যাচাই","ক্লায়েন্ট অনবোর্ডিং ফর্ম","আপনার দলের জন্য পরিষ্কার মাসিক সারসংক্ষেপ"]},
+  forWho:{en:"Tax and VAT consultancies serving Bangladeshi businesses.",bn:"বাংলাদেশি ব্যবসার ভ্যাট ও কর পরামর্শ দেওয়া কনসালটেন্সি।"},
+  price:{bdt:6000,usd:50},unit:"mo",from:true,
+  includes:{en:["Setup call and data import help","Monthly review of results with you","Support reply within 24 hours"],bn:["সেটআপ কল ও তথ্য ইমপোর্টে সাহায্য","প্রতি মাসে ফলাফল নিয়ে আপনার সঙ্গে পর্যালোচনা","২৪ ঘণ্টার মধ্যে সাপোর্টের উত্তর"]},
+  cta:{en:"Book a demo",bn:"ডেমো বুক করুন"},want:"demo"},
+ {id:"roza",type:"website",name:{en:"Real Estate Website Pack",bn:"রিয়েল এস্টেট ওয়েবসাইট প্যাক"},tag:{en:"Template",bn:"টেমপ্লেট"},
+  benefit:{en:"A finished property company website you can fill with your own projects.",bn:"আপনার নিজের প্রজেক্ট বসানোর জন্য তৈরি একটি প্রপার্টি কোম্পানির ওয়েবসাইট।"},
+  problem:{en:"A custom site takes months and costs a lot. Many developers still sell from Facebook pages alone.",bn:"কাস্টম সাইট বানাতে মাস লাগে, খরচও বেশি। অনেক ডেভেলপার এখনো শুধু ফেসবুক পেজ থেকে বিক্রি করেন।"},
+  features:{en:["Home, projects, about and contact pages","Project cards with gallery and details","Logo placement and responsive layout","Works on phone, tablet and desktop","Source files included"],
+            bn:["হোম, প্রজেক্ট, আমাদের সম্পর্কে ও যোগাযোগ পেজ","গ্যালারি ও বিস্তারিতসহ প্রজেক্ট কার্ড","লোগো বসানো এবং রেসপনসিভ লেআউট","ফোন, ট্যাব ও ডেস্কটপে ঠিকভাবে চলে","সোর্স ফাইলসহ"]},
+  forWho:{en:"Small and mid-size property developers and land sellers.",bn:"ছোট ও মাঝারি প্রপার্টি ডেভেলপার এবং জমি বিক্রেতা।"},
+  price:{bdt:25000,usd:210},unit:"once",from:false,
+  includes:{en:["Full source files","Set up with your logo and colors","30 days of fixes"],bn:["পূর্ণ সোর্স ফাইল","আপনার লোগো ও রঙ দিয়ে সেটআপ","৩০ দিন ত্রুটি সংশোধন"]},
+  cta:{en:"Buy this template",bn:"এই টেমপ্লেট কিনুন"},want:"buy"},
+ {id:"neural",type:"website",name:{en:"NeuralFlow Landing Page",bn:"NeuralFlow ল্যান্ডিং পেজ"},tag:{en:"Template",bn:"টেমপ্লেট"},
+  benefit:{en:"A dark, animated landing page for an AI or software product.",bn:"এআই বা সফটওয়্যার প্রোডাক্টের জন্য ডার্ক থিমের অ্যানিমেটেড ল্যান্ডিং পেজ।"},
+  problem:{en:"Launching a product needs a page that looks serious on day one, and agencies take weeks to deliver one.",bn:"প্রোডাক্ট লঞ্চের প্রথম দিনেই গুরুত্ব নিয়ে দেখানোর মতো একটি পেজ লাগে, কিন্তু এজেন্সি দিতে কয়েক সপ্তাহ নেয়।"},
+  features:{en:["Single file, no extra libraries to install","Dark theme with animated background","Sections for features, pricing and sign-up","Loads fast on slow connections","Easy to edit text and colors"],
+            bn:["একটি ফাইল, বাড়তি লাইব্রেরি ইনস্টল লাগে না","অ্যানিমেটেড ব্যাকগ্রাউন্ডসহ ডার্ক থিম","ফিচার, দাম ও সাইন-আপের অংশ","ধীর ইন্টারনেটেও দ্রুত লোড হয়","লেখা ও রঙ বদলানো সহজ"]},
+  forWho:{en:"Founders, freelancers and agencies launching a software or AI offer.",bn:"যেসব ফাউন্ডার, ফ্রিল্যান্সার ও এজেন্সি সফটওয়্যার বা এআই সেবা লঞ্চ করছেন।"},
+  price:{bdt:3500,usd:29},unit:"once",from:false,
+  includes:{en:["Download link after payment","License for one project","Editing guide"],bn:["টাকা দেওয়ার পর ডাউনলোড লিংক","একটি প্রজেক্টের জন্য লাইসেন্স","এডিটিং গাইড"]},
+  cta:{en:"Buy this template",bn:"এই টেমপ্লেট কিনুন"},want:"buy"},
+ {id:"physiq",type:"app",name:{en:"PhysIQ Physics Solver",bn:"PhysIQ ফিজিক্স সলভার"},tag:{en:"App",bn:"অ্যাপ"},
+  benefit:{en:"Solve physics problems step by step with diagrams and clean equations.",bn:"ডায়াগ্রাম ও পরিচ্ছন্ন সমীকরণসহ ধাপে ধাপে পদার্থবিজ্ঞানের সমাধান।"},
+  problem:{en:"Students copy answers without understanding them, and teachers cannot draw a diagram for every question.",bn:"শিক্ষার্থীরা না বুঝে শুধু উত্তর কপি করে। আর শিক্ষকরা প্রতিটি প্রশ্নের জন্য ডায়াগ্রাম আঁকার সময় পান না।"},
+  features:{en:["Step-by-step solutions","Diagrams drawn for each problem","Neatly typeset equations","Runs in the browser, no install","Works for tuition centers and schools"],
+            bn:["ধাপে ধাপে সমাধান","প্রতিটি সমস্যার জন্য আঁকা ডায়াগ্রাম","সুন্দরভাবে সাজানো সমীকরণ","ব্রাউজারে চলে, ইনস্টল লাগে না","কোচিং সেন্টার ও স্কুলে ব্যবহার করা যায়"]},
+  forWho:{en:"Students, teachers, coaching centers and schools.",bn:"শিক্ষার্থী, শিক্ষক, কোচিং সেন্টার ও স্কুল।"},
+  price:{bdt:250,usd:2},unit:"mo",from:true,
+  includes:{en:["Student access","School license available on request","Free demo problems"],bn:["শিক্ষার্থীর অ্যাক্সেস","অনুরোধে স্কুল লাইসেন্স","বিনা মূল্যে ডেমো সমস্যা"]},
+  cta:{en:"Book a demo",bn:"ডেমো বুক করুন"},want:"demo"},
+ {id:"card",type:"app",name:{en:"Visiting Card Designer",bn:"ভিজিটিং কার্ড ডিজাইনার"},tag:{en:"App · License",bn:"অ্যাপ · লাইসেন্স"},
+  benefit:{en:"Design a visiting card with a live preview and print-ready sizes.",bn:"লাইভ প্রিভিউ ও ছাপার উপযোগী মাপসহ ভিজিটিং কার্ড ডিজাইন করুন।"},
+  problem:{en:"Small teams wait days for a designer to change one phone number, and print shops fix mistakes by hand.",bn:"একটি ফোন নম্বর বদলাতে ছোট দলকে ডিজাইনারের জন্য দিনের পর দিন অপেক্ষা করতে হয়, আর প্রেসে ভুল হাতে ঠিক করা হয়।"},
+  features:{en:["Live preview while you type","Print-ready size and bleed settings","Company logo and color set once","Reuse for every staff member","Runs in the browser"],
+            bn:["লেখার সময়ই লাইভ প্রিভিউ","ছাপার উপযোগী সাইজ ও ব্লিড সেটিং","কোম্পানির লোগো ও রঙ একবারই ঠিক করুন","প্রতিটি কর্মীর জন্য আবার ব্যবহার করুন","ব্রাউজারে চলে"]},
+  forWho:{en:"Print shops, companies with many staff, and agencies.",bn:"প্রেস, বহু কর্মীর কোম্পানি ও এজেন্সি।"},
+  price:{bdt:4000,usd:34},unit:"once",from:false,
+  includes:{en:["Licensed copy for one business","Setup with your logo","Optional yearly support"],bn:["একটি ব্যবসার জন্য লাইসেন্সপ্রাপ্ত কপি","আপনার লোগো দিয়ে সেটআপ","চাইলে বার্ষিক সাপোর্ট"]},
+  cta:{en:"Buy a license",bn:"লাইসেন্স কিনুন"},want:"buy"},
+ {id:"bot",type:"service",name:{en:"AI Chatbot and Automation",bn:"এআই চ্যাটবট ও অটোমেশন"},tag:{en:"Custom",bn:"কাস্টম"},
+  benefit:{en:"A chatbot or workflow that answers customers and handles routine tasks.",bn:"গ্রাহকের প্রশ্নের উত্তর দেয় এবং রুটিন কাজ সামলায়, এমন চ্যাটবট বা ওয়ার্কফ্লো।"},
+  problem:{en:"Your team answers the same questions all day and copies data between tools by hand.",bn:"আপনার দল সারাদিন একই প্রশ্নের উত্তর দেয় আর এক টুল থেকে আরেক টুলে হাতে তথ্য কপি করে।"},
+  features:{en:["Chatbot trained on your own questions","Connects to forms, sheets and messaging","Workflows for leads, follow-ups and reports","Plain-language handover and training","Monthly care plan available"],
+            bn:["আপনার নিজের প্রশ্ন দিয়ে প্রশিক্ষিত চ্যাটবট","ফর্ম, শিট ও মেসেজিংয়ের সঙ্গে সংযোগ","লিড, ফলো-আপ ও রিপোর্টের ওয়ার্কফ্লো","সহজ ভাষায় হস্তান্তর ও প্রশিক্ষণ","চাইলে মাসিক কেয়ার প্ল্যান"]},
+  forWho:{en:"Any business with repeated customer questions or manual office work.",bn:"যে কোনো ব্যবসা, যেখানে গ্রাহকের প্রশ্ন বারবার আসে বা অফিসের কাজ হাতে করতে হয়।"},
+  price:{bdt:15000,usd:125},unit:"proj",from:true,
+  includes:{en:["Fixed quote after a short call","50% to start, 50% on delivery","30 days of fixes"],bn:["ছোট কলের পর নির্দিষ্ট কোটেশন","শুরুতে ৫০%, ডেলিভারিতে ৫০%","৩০ দিন ত্রুটি সংশোধন"]},
+  cta:{en:"Get a quote",bn:"কোটেশন নিন"},want:"custom"}
+];
+var PLANS = [
+ {name:{en:"Starter",bn:"স্টার্টার"},m:{bdt:3000,usd:25},y:{bdt:30000,usd:250},pop:false,
+  list:{en:["1 company workspace","Up to 3 users","Up to 100 land records","Document storage 2 GB","Email support"],bn:["১টি কোম্পানির ওয়ার্কস্পেস","সর্বোচ্চ ৩ জন ব্যবহারকারী","সর্বোচ্চ ১০০টি জমির রেকর্ড","২ জিবি ডকুমেন্ট স্টোরেজ","ইমেইলে সাপোর্ট"]}},
+ {name:{en:"Pro",bn:"প্রো"},m:{bdt:8000,usd:65},y:{bdt:80000,usd:650},pop:true,
+  list:{en:["Up to 10 users","Up to 1,000 land records","Payment tracking per plot","Document storage 20 GB","WhatsApp support"],bn:["সর্বোচ্চ ১০ জন ব্যবহারকারী","সর্বোচ্চ ১,০০০টি জমির রেকর্ড","প্রতিটি জমির পেমেন্ট ট্র্যাকিং","২০ জিবি ডকুমেন্ট স্টোরেজ","হোয়াটসঅ্যাপে সাপোর্ট"]}},
+ {name:{en:"Business",bn:"বিজনেস"},m:{bdt:20000,usd:165},y:{bdt:200000,usd:1650},pop:false,
+  list:{en:["Unlimited users","Unlimited land records","Priority support","Custom fields and reports","Setup help and training"],bn:["সীমাহীন ব্যবহারকারী","সীমাহীন জমির রেকর্ড","অগ্রাধিকার সাপোর্ট","কাস্টম ফিল্ড ও রিপোর্ট","সেটআপে সাহায্য ও প্রশিক্ষণ"]}}
+];
+var TYPES=[["all","all"],["saas","tSaas"],["app","tApp"],["website","tWebsite"],["service","tService"]];
+
+var lang="en", cur="bdt", bill="m", filter="all", openId=null;
+try{var sv=localStorage.getItem("d4s-lang"); if(sv==="bn"||sv==="en") lang=sv; else if((navigator.language||"").toLowerCase().indexOf("bn")===0) lang="bn"}catch(e){}
+
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function t(k){return T[lang][k]}
+function L(o){return o[lang]}
+function num(n){
+  var loc=lang==="bn"?"bn-BD":(cur==="bdt"?"en-IN":"en-US");
+  try{return n.toLocaleString(loc)}catch(e){return String(n)}
+}
+function money(p){return (cur==="bdt"?"৳":"$")+num(p[cur])}
+
+/* logo: animated mark, or your own image when CONFIG.logoSrc is set */
+function logo(size){
+  if(CONFIG.logoSrc) return '<img class="logoimg" src="'+esc(CONFIG.logoSrc)+'" width="'+size+'" height="'+size+'" alt="D4S Platform">';
+  return '<svg class="lg" width="'+size+'" height="'+size+'" viewBox="0 0 64 64" role="img" aria-label="D4S Platform">'+
+    '<circle class="ring" cx="32" cy="32" r="26"/>'+
+    '<g class="orbit"><circle class="dot" cx="32" cy="3.5" r="3.4"/></g>'+
+    '<text x="32" y="38.5">D4S</text></svg>';
+}
+
+function thumb(p,i){return thumbHtml(p,"")}
+function thumbHtml(p,extra){
+  var n=L(p.name), label=/^D4S/i.test(n)?n:"D4S "+n;
+  return '<div class="thumb'+(extra?' '+extra:'')+'"><img src="assets/d4s-logo-dark.webp" width="1136" height="556" loading="lazy" alt=""><span class="tlabel">'+esc(label)+'</span></div>';
+}
+
+function applyStatic(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=t(el.dataset.i18n)});
+  document.querySelectorAll("[data-i18n-html]").forEach(function(el){el.innerHTML=t(el.dataset.i18nHtml)});
+  $("#meetImg").alt=lang==="bn"?"শাহীন, D4S Platform-এর প্রতিষ্ঠাতা":"Shaheen, founder of D4S Platform";
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){el.placeholder=t(el.dataset.i18nPh)});
+  document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===lang)});
+}
+function renderLogos(){$("#logoHead").innerHTML=logo(40);$("#logoHero").innerHTML=logo(56)}
+function sndLabel(){var f=$("#film");$("#snd").textContent=t(f.muted?"soundOn":"soundOff")}
+function renderWays(){
+  $("#ways").innerHTML='<h2>'+esc(t("waysTitle"))+'</h2>'+WAYS.map(function(w){return '<div class="way"><b>'+esc(L(w.t))+'</b><span>'+esc(L(w.d))+'</span></div>'}).join("");
+}
+function renderSteps(){
+  $("#steps").innerHTML=STEPS.map(function(s,i){
+    return '<div class="step"><span class="mono n">'+esc(t("step"))+num(i+1)+'</span><h3>'+esc(L(s.t))+'</h3><p>'+esc(L(s.d))+'</p></div>'}).join("");
+}
+function renderRecv(){
+  $("#recv").innerHTML='<h3>'+esc(t("recvTitle"))+'</h3><p class="sub">'+esc(t("recvSub"))+'</p><div class="recvgrid">'+
+    RECV.map(function(r){return '<div class="rbox"><b>'+esc(L(r.t))+'</b><span>'+esc(L(r.d))+'</span></div>'}).join("")+'</div>';
+}
+function renderFaq(){
+  $("#faqList").innerHTML=FAQ.map(function(f){return '<details><summary>'+esc(L(f.q))+'</summary><p>'+esc(L(f.a))+'</p></details>'}).join("");
+  $("#trust").innerHTML=TRUST.map(function(x){return '<div><b>'+esc(L(x.t))+'</b><span>'+esc(L(x.d))+'</span></div>'}).join("");
+}
+function renderChips(){
+  $("#chips").innerHTML=TYPES.map(function(x){
+    return '<button type="button" class="chip" data-f="'+x[0]+'" aria-pressed="'+(filter===x[0])+'">'+esc(t(x[1]))+'</button>'}).join("");
+}
+function renderGrid(){
+  var all=filter==="all";
+  var list=PRODUCTS.filter(function(p){return all||p.type===filter});
+  var html=list.map(function(p){
+    var i=PRODUCTS.indexOf(p), wide=false;
+    return '<article class="card'+(wide?' wide':'')+'">'+thumb(p,i)+'<div class="body"><span class="mono tag">'+esc(L(p.tag))+'</span><h3>'+esc(L(p.name))+'</h3><p>'+esc(L(p.benefit))+'</p>'+
+      '<div class="foot"><span class="price"><small>'+(p.from?esc(t("from")):"")+'</small>'+money(p.price)+' <small>'+esc(t("unit")[p.unit])+'</small></span>'+
+      '<button type="button" class="btn" data-open="'+p.id+'">'+esc(t("view"))+'</button></div></div></article>';
+  }).join("");
+  if(all) html+='<article class="card cta"><div class="body"><div class="ctatext"><span class="mono tag">'+esc(t("ctaTag"))+'</span><h3>'+esc(t("ctaTitle"))+'</h3><p>'+esc(t("ctaText"))+'</p></div>'+
+    '<div class="foot"><button type="button" class="btn gold" data-go="bot" data-want="custom">'+esc(t("ctaBtn"))+'</button></div></div></article>';
+  $("#grid").innerHTML=html||'<p class="empty">'+esc(t("empty"))+'</p>';
+}
+function renderPlans(){
+  $("#plans").innerHTML=PLANS.map(function(pl){
+    var pr=pl[bill];
+    return '<div class="plan'+(pl.pop?" pop":"")+'"><h3>'+esc(L(pl.name))+(pl.pop?'<span class="badge">'+esc(t("popular"))+'</span>':'')+'</h3>'+
+      '<div class="big">'+money(pr)+' <small>'+esc(bill==="m"?t("perMonth"):t("perYear"))+'</small></div>'+
+      '<ul>'+L(pl.list).map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul>'+
+      '<button type="button" class="btn'+(pl.pop?" gold":"")+'" data-plan="'+pl.name.en+'">'+esc(t("trial"))+'</button></div>';
+  }).join("");
+}
+function renderSelects(){
+  var pv=$("#fProduct").value, wv=$("#fWant").value;
+  $("#fProduct").innerHTML=PRODUCTS.map(function(p){return '<option value="'+p.id+'">'+esc(L(p.name))+'</option>'}).join("");
+  $("#fWant").innerHTML=["demo","trial","buy","custom"].map(function(k){return '<option value="'+k+'">'+esc(t("want")[k])+'</option>'}).join("");
+  if(pv) $("#fProduct").value=pv; if(wv) $("#fWant").value=wv;
+}
+function demoBlock(p){
+  var d=DEMOS[p.id]||{}, has=!!(d.video||d.url);
+  var h='<h3>'+esc(t("demoTitle"))+'</h3><div class="box"><p>'+esc(t(has?"demoNote":"demoNoteNone"))+'</p>';
+  if(d.video) h+='<video class="dvid" controls preload="none" playsinline src="'+esc(d.video)+'"></video>';
+  h+='<div class="cta-row" style="margin-top:14px">';
+  if(d.url) h+='<a class="btn gold" href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(t("demoLive"))+'</a>';
+  h+='<button type="button" class="btn'+(d.url?'':' gold')+'" data-go="'+p.id+'" data-want="demo">'+esc(t("demoBook"))+'</button></div></div>';
+  return h;
+}
+function renderDrawer(){
+  var p=PRODUCTS.filter(function(x){return x.id===openId})[0]; if(!p) return;
+  $("#drawer").innerHTML='<button class="x" type="button" data-close aria-label="'+esc(t("close"))+'">×</button>'+
+   '<span class="mono tag">'+esc(L(p.tag))+'</span><h2 id="dTitle">'+esc(L(p.name))+'</h2>'+
+   thumbHtml(p,"dimg")+
+   '<p style="margin-top:16px;font-size:18px">'+esc(L(p.benefit))+'</p>'+
+   demoBlock(p)+
+   '<h3>'+esc(t("dProblem"))+'</h3><p>'+esc(L(p.problem))+'</p>'+
+   '<h3>'+esc(t("dGet"))+'</h3><ul>'+L(p.features).map(function(f){return '<li>'+esc(f)+'</li>'}).join("")+'</ul>'+
+   '<h3>'+esc(t("dFor"))+'</h3><p>'+esc(L(p.forWho))+'</p>'+
+   '<h3>'+esc(t("dPrice"))+'</h3><div class="box"><div class="price" style="font-size:28px"><small>'+(p.from?esc(t("from")):"")+'</small>'+money(p.price)+' <small>'+esc(t("unit")[p.unit])+'</small></div>'+
+   '<ul style="margin-top:12px">'+L(p.includes).map(function(f){return '<li>'+esc(f)+'</li>'}).join("")+'</ul></div>'+
+   '<div class="cta-row"><button type="button" class="btn gold" data-go="'+p.id+'" data-want="'+p.want+'">'+esc(L(p.cta))+'</button>'+
+   '<button type="button" class="btn" data-go="'+p.id+'" data-want="custom">'+esc(t("dCustom"))+'</button></div>';
+}
+function renderAll(){
+  applyStatic();renderLogos();sndLabel();renderWays();renderSteps();renderRecv();renderFaq();renderChips();renderGrid();renderPlans();renderSelects();
+  if(openId&&!$("#scrim").hidden) renderDrawer();
+}
+
+var lastFocus=null;
+function openDrawer(id){
+  lastFocus=document.activeElement; openId=id; renderDrawer();
+  $("#scrim").hidden=false; document.body.style.overflow="hidden"; $("#drawer").focus();
+}
+function closeDrawer(){
+  $("#scrim").hidden=true; document.body.style.overflow=""; openId=null;
+  if(lastFocus&&lastFocus.focus) lastFocus.focus();
+}
+function goRequest(id,want){
+  $("#fProduct").value=id; $("#fWant").value=want;
+  $("#scrim").hidden=true; document.body.style.overflow=""; openId=null;
+  $("#request").scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(function(){$("#fName").focus({preventScroll:true})},400);
+}
+
+document.addEventListener("click",function(e){
+  var b=e.target.closest("button,a"); if(!b) return;
+  if(b.dataset.lang){lang=b.dataset.lang;try{localStorage.setItem("d4s-lang",lang)}catch(er){} renderAll()}
+  else if(b.dataset.cur){cur=b.dataset.cur;
+    document.querySelectorAll("[data-cur]").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.cur===cur)});
+    renderGrid();renderPlans();if(openId&&!$("#scrim").hidden) renderDrawer()}
+  else if(b.dataset.bill){bill=b.dataset.bill;
+    document.querySelectorAll("[data-bill]").forEach(function(x){x.setAttribute("aria-pressed",x===b)});renderPlans()}
+  else if(b.dataset.f){filter=b.dataset.f;renderChips();renderGrid()}
+  else if(b.dataset.open){openDrawer(b.dataset.open)}
+  else if(b.dataset.close!==undefined){closeDrawer()}
+  else if(b.dataset.go){goRequest(b.dataset.go,b.dataset.want)}
+  else if(b.dataset.plan){goRequest("landflow","trial");
+    $("#fMsg").value=t("planLabel")+": "+(lang==="bn"?PLANS.filter(function(x){return x.name.en===b.dataset.plan})[0].name.bn:b.dataset.plan)+" ("+(bill==="m"?t("planM"):t("planY"))+")"}
+});
+$("#scrim").addEventListener("click",function(e){if(e.target===$("#scrim")) closeDrawer()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("#scrim").hidden) closeDrawer()});
+
+var msgText="";
+$("#reqForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var n=$("#fName").value.trim(), ph=$("#fPhone").value.trim();
+  if(!n||!ph){$("#fErr").hidden=false;return}
+  $("#fErr").hidden=true;
+  var p=PRODUCTS.filter(function(x){return x.id===$("#fProduct").value})[0], m=t("msg");
+  msgText=m.hello+"\n"+m.i+n+" ("+ph+")\n"+m.prod+L(p.name)+"\n"+m.req+t("want")[$("#fWant").value]+
+    ($("#fMsg").value.trim()?"\n"+m.note+$("#fMsg").value.trim():"");
+  $("#outText").textContent=msgText;
+  var base=CONFIG.whatsapp?"https://wa.me/"+CONFIG.whatsapp:"https://wa.me/";
+  $("#waLink").href=base+"?text="+encodeURIComponent(msgText);
+  $("#out").hidden=false;
+  $("#out").scrollIntoView({behavior:"smooth",block:"nearest"});
+});
+$("#copyBtn").addEventListener("click",function(){
+  var b=this;
+  function ok(){b.textContent=t("copied");setTimeout(function(){b.textContent=t("copyText")},1800)}
+  function fallback(){var r=document.createRange();r.selectNodeContents($("#outText"));var s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent=t("selected")}
+  try{navigator.clipboard.writeText(msgText).then(ok,fallback)}catch(err){fallback()}
+});
+
+renderAll();
+
+/* hero film: muted loop, sound on request, still frame for reduced motion */
+(function(){
+  var f=$("#film"), s=$("#snd");
+  try{
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      f.removeAttribute("autoplay"); f.pause(); f.controls=true; s.hidden=true; return;
+    }
+  }catch(e){}
+  var p=f.play(); if(p&&p.catch) p.catch(function(){f.controls=true});
+  s.addEventListener("click",function(){
+    f.muted=!f.muted;
+    if(!f.muted){var q=f.play(); if(q&&q.catch) q.catch(function(){})}
+    sndLabel();
+  });
+})();
+</script>
+
+</body>
+</html>
